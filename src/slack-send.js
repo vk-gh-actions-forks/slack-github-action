@@ -1,12 +1,13 @@
-const github = require('@actions/github');
-const { WebClient } = require('@slack/web-api');
-const flatten = require('flat');
-const axios = require('axios');
 const { promises: fs } = require('fs');
 const path = require('path');
+const github = require('@actions/github');
+const flatten = require('flat');
+const axios = require('axios');
 const markup = require('markup-js');
-const HttpsProxyAgent = require('https-proxy-agent');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 const { parseURL } = require('whatwg-url');
+
+const { createWebClient } = require('./web-client');
 
 const SLACK_WEBHOOK_TYPES = {
   WORKFLOW_TRIGGER: 'WORKFLOW_TRIGGER',
@@ -39,8 +40,8 @@ module.exports = async function slackSend(core) {
       try {
         payload = await fs.readFile(path.resolve(payloadFilePath), 'utf-8');
         // parse github context variables
-        const context = { github: github.context };
-        const payloadString = payload.replace('$', '');
+        const context = { github: github.context, env: process.env };
+        const payloadString = payload.replaceAll('${{', '{{');
         payload = markup.up(payloadString, context);
       } catch (error) {
         // passed in payload file path was invalid
@@ -63,7 +64,8 @@ module.exports = async function slackSend(core) {
     if (typeof botToken !== 'undefined' && botToken.length > 0) {
       const message = core.getInput('slack-message') || '';
       const channelIds = core.getInput('channel-id') || '';
-      const web = new WebClient(botToken);
+      const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy || '';
+      const web = createWebClient(botToken, httpsProxy);
 
       if (channelIds.length <= 0) {
         console.log('Channel ID is required to run this action. An empty one has been provided');
@@ -121,7 +123,7 @@ module.exports = async function slackSend(core) {
           }
         }
       } catch (err) {
-        console.log('failed to configure https proxy agent for http proxy. Using default axios configuration');
+        console.log('failed to configure https proxy agent for http proxy. Using default axios configuration', err);
       }
 
       try {
