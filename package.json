@@ -33,8 +33,8 @@
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/github": "^5.1.1",
-    "@slack/web-api": "^6.9.1",
-    "axios": "^1.5.1",
+    "@slack/web-api": "^6.12.1",
+    "axios": "^1.6.8",
     "flat": "^5.0.2",
     "https-proxy-agent": "^7.0.2",
     "markup-js": "^1.5.21",
@@ -49,7 +49,7 @@
     "eslint-plugin-jsdoc": "^46.5.1",
     "eslint-plugin-node": "^11.1.0",
     "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
+    "nyc": "^17.0.0",
     "rewiremock": "^3.14.5",
     "sinon": "^16.0.0"
   }
