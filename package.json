@@ -43,12 +43,12 @@
   "devDependencies": {
     "@vercel/ncc": "^0.36.1",
     "chai": "^4.3.10",
-    "eslint": "^8.52.0",
+    "eslint": "^9.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jsdoc": "^46.5.1",
     "eslint-plugin-node": "^11.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^10.6.0",
     "nyc": "^15.1.0",
     "rewiremock": "^3.14.5",
     "sinon": "^16.0.0"
