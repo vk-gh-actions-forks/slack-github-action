@@ -1,14 +1,25 @@
 {
-  "name": "slack-github-action",
-  "version": "1.24.0",
-  "description": "The official slack github action. Use this to send data into your Slack workspace",
+  "name": "@slack/slack-github-action",
+  "version": "4.0.0",
+  "private": true,
+  "description": "The official Slack GitHub Action. Use this to send data into your Slack workspace",
   "main": "dist/index.js",
+  "files": [
+    "action.yml",
+    "cli/",
+    "dist/"
+  ],
+  "type": "module",
   "scripts": {
-    "lint": "eslint .",
-    "local": "act public --eventpath .github/workflows/local/event.json --secret-file .github/workflows/local/.env",
-    "test:mocha": "nyc mocha --config .mocharc.json test/*-test.js",
-    "test": "npm run lint && npm run test:mocha",
-    "build": "npx @vercel/ncc build src/index.js --license licenses.txt"
+    "build": "ncc build src/index.js --license licenses.txt --source-map",
+    "changeset": "npx @changesets/cli",
+    "check": "tsc --noemit --project ./jsconfig.json",
+    "dev": "act public --eventpath .github/resources/.actions/event.json --secret-file .github/resources/.env --platform ubuntu-latest=node:24 --container-architecture linux/amd64",
+    "docs": "TAG=\"v$(npm pkg get version | jq -r)\" && grep -rl 'slackapi/slack-github-action@v' ./docs ./example-workflows | xargs sed -i \"s|slackapi/slack-github-action@v.*|slackapi/slack-github-action@${TAG}|g\" && grep -rl 'slackapi/slack-github-action/cli@v' ./docs ./example-workflows | xargs sed -i \"s|slackapi/slack-github-action/cli@v.*|slackapi/slack-github-action/cli@${TAG}|g\"",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "test": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=test/coverage.txt test/*.spec.js",
+    "version": "npm run changeset version && npm install && npm run docs"
   },
   "repository": {
     "type": "git",
@@ -26,31 +37,34 @@
     "url": "https://github.com/slackapi/slack-github-action/issues"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.10.0"
+    "node": ">=24.11.0",
+    "npm": ">=11.6.1"
   },
-  "homepage": "https://github.com/slackapi/slack-github-action#readme",
+  "homepage": "https://docs.slack.dev/tools/slack-github-action/",
   "dependencies": {
-    "@actions/core": "^1.10.1",
-    "@actions/github": "^5.1.1",
-    "@slack/web-api": "^6.9.1",
-    "axios": "^1.5.1",
-    "flat": "^5.0.2",
-    "https-proxy-agent": "^7.0.2",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@slack/logger": "^5.0.0",
+    "@slack/web-api": "^8.0.0",
+    "@slack/webhook": "^8.0.0",
+    "flat": "^6.0.1",
+    "js-yaml": "^5.2.2",
     "markup-js": "^1.5.21",
-    "whatwg-url": "^13.0.0"
+    "undici": "^8.9.0"
+  },
+  "overrides": {
+    "undici-types": "$undici"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.36.1",
-    "chai": "^4.3.10",
-    "eslint": "^8.52.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsdoc": "^46.5.1",
-    "eslint-plugin-node": "^11.1.0",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
-    "rewiremock": "^3.14.5",
-    "sinon": "^16.0.0"
+    "@biomejs/biome": "^2.5.6",
+    "@changesets/cli": "^3.0.0",
+    "@types/flat": "^5.0.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/markup-js": "^1.5.0",
+    "@types/node": "^24.13.2",
+    "@types/sinon": "^22.0.0",
+    "@vercel/ncc": "^0.44.1",
+    "sinon": "^22.1.0",
+    "typescript": "^7.0.2"
   }
 }
